@@ -659,12 +659,13 @@ class _Stream:
             errno = _pulse._pa_context_errno(_pulse.context)
             raise RuntimeError("stream creation failed with error ", errno)
         bufattr = _ffi.new("pa_buffer_attr*")
-        bufattr.maxlength = 2**32-1 # max buffer length
         numchannels = self.channels if isinstance(self.channels, int) else len(self.channels)
+        bufattr.maxlength = 2 * self._blocksize * numchannels * 4 if self._blocksize else 2 ** 32 - 1
         bufattr.fragsize = self._blocksize*numchannels*4 if self._blocksize else 2**32-1 # recording block sys.getsizeof()
         bufattr.minreq = 2**32-1 # start requesting more data at this bytes
         bufattr.prebuf = 2**32-1 # start playback after this bytes are available
         bufattr.tlength = self._blocksize*numchannels*4 if self._blocksize else 2**32-1 # buffer length in bytes on server
+        
         self._connect_stream(bufattr)
         while _pulse._pa_stream_get_state(self.stream) not in [_pa.PA_STREAM_READY, _pa.PA_STREAM_FAILED]:
             time.sleep(0.01)
