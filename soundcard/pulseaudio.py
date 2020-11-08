@@ -855,6 +855,16 @@ class _Recorder(_Stream):
                 captured_data[-1], self._pending_chunk = numpy.split(captured_data[-1], [to_split])
                 return numpy.reshape(numpy.concatenate(captured_data), [-1, self.channels])
 
+    def try_record(self, numframes):
+
+        captured_data = [self._pending_chunk]
+        captured_frames = self._pending_chunk.shape[0] / self.channels
+        if captured_frames >= numframes:
+            keep, self._pending_chunk = numpy.split(self._pending_chunk, [int(numframes * self.channels)])
+            return numpy.reshape(keep, [-1, self.channels])
+        else:
+            return None
+
     def flush(self):
         """Return the last pending chunk.
 
