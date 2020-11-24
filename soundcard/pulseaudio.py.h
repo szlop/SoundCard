@@ -110,6 +110,7 @@ typedef enum pa_channel_map_def {
 } pa_channel_map_def_t;
 
 pa_channel_map* pa_channel_map_init_auto(pa_channel_map *m, unsigned channels, pa_channel_map_def_t def);
+pa_channel_map* pa_channel_map_init(pa_channel_map *m);
 int pa_channel_map_valid(const pa_channel_map *map);
 
 typedef struct pa_buffer_attr {

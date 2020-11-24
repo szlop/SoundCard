@@ -647,10 +647,17 @@ class _Stream:
         # pam and channelmap refer to the same object, but need different
         # names to avoid garbage collection trouble on the Python/C boundary
         pam = _ffi.new("pa_channel_map*")
-        channelmap = _pa.pa_channel_map_init_auto(pam, samplespec.channels, _pa.PA_CHANNEL_MAP_DEFAULT)
-        if isinstance(self.channels, collections.Iterable):
-            for idx, ch in enumerate(self.channels):
-                channelmap.map[idx] = ch+1
+        channelmap = _pa.pa_channel_map_init(pam)
+        channelmap.channels = samplespec.channels
+        channelmap.map[0] = _pa.PA_CHANNEL_POSITION_FRONT_LEFT
+        channelmap.map[1] = _pa.PA_CHANNEL_POSITION_FRONT_RIGHT
+        channelmap.map[2] = _pa.PA_CHANNEL_POSITION_FRONT_CENTER
+        channelmap.map[3] = _pa.PA_CHANNEL_POSITION_LFE
+        channelmap.map[4] = _pa.PA_CHANNEL_POSITION_REAR_LEFT
+        channelmap.map[5] = _pa.PA_CHANNEL_POSITION_REAR_RIGHT
+        channelmap.map[6] = _pa.PA_CHANNEL_POSITION_SIDE_LEFT
+        channelmap.map[7] = _pa.PA_CHANNEL_POSITION_SIDE_RIGHT
+
         if not _pa.pa_channel_map_valid(channelmap):
             raise RuntimeError('invalid channel map')
 
